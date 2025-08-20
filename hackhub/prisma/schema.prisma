@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid()) @db.NVarChar(100)
+  name          String?        @db.NVarChar(255)
+  email         String         @unique @db.NVarChar(255)
+  emailVerified DateTime?
+  image         String?        @db.NVarChar(2048)
+  role          String         @default("PARTICIPANT") @db.NVarChar(50)
+  passwordHash  String?        @db.NVarChar(255)
+  accounts      Account[]
+  createdEvents Event[]        @relation("OrganizerEvents")
+  registrations Registration[]
+  sessions      Session[]
+  teams         TeamMember[]
+}
+
+model Account {
+  id                String  @id @default(cuid()) @db.NVarChar(100)
+  userId            String  @db.NVarChar(100)
+  type              String  @db.NVarChar(255)
+  provider          String  @db.NVarChar(255)
+  providerAccountId String  @db.NVarChar(255)
+  refresh_token     String? @db.NVarChar(2048)
+  access_token      String? @db.NVarChar(2048)
+  expires_at        Int?
+  token_type        String? @db.NVarChar(255)
+  scope             String? @db.NVarChar(2048)
+  id_token          String? @db.NVarChar(2048)
+  session_state     String? @db.NVarChar(2048)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid()) @db.NVarChar(100)
+  sessionToken String   @unique @db.NVarChar(255)
+  userId       String   @db.NVarChar(100)
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model VerificationToken {
+  identifier String   @db.NVarChar(255)
+  token      String   @unique @db.NVarChar(255)
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Event {
+  id            String         @id @default(cuid()) @db.NVarChar(100)
+  name          String         @db.NVarChar(255)
+  description   String?        @db.NVarChar(Max)
+  theme         String?        @db.NVarChar(255)
+  location      String?        @db.NVarChar(255)
+  online        Boolean        @default(true)
+  startAt       DateTime
+  endAt         DateTime
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  organizerId   String         @db.NVarChar(100)
+  organizer     User           @relation("OrganizerEvents", fields: [organizerId], references: [id], onUpdate: NoAction)
+  prizes        Prize[]
+  registrations Registration[]
+  rules         Rule[]
+  sponsors      Sponsor[]
+  teams         Team[]
+  tracks        Track[]
+}
+
+model Track {
+  id      String @id @default(cuid()) @db.NVarChar(100)
+  name    String @db.NVarChar(255)
+  eventId String @db.NVarChar(100)
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Rule {
+  id      String @id @default(cuid()) @db.NVarChar(100)
+  text    String @db.NVarChar(1024)
+  eventId String @db.NVarChar(100)
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Prize {
+  id          String  @id @default(cuid()) @db.NVarChar(100)
+  title       String  @db.NVarChar(255)
+  description String? @db.NVarChar(1024)
+  eventId     String  @db.NVarChar(100)
+  event       Event   @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Sponsor {
+  id      String  @id @default(cuid()) @db.NVarChar(100)
+  name    String  @db.NVarChar(255)
+  logoUrl String? @db.NVarChar(2048)
+  eventId String  @db.NVarChar(100)
+  event   Event   @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Registration {
+  id        String   @id @default(cuid()) @db.NVarChar(100)
+  userId    String   @db.NVarChar(100)
+  eventId   String   @db.NVarChar(100)
+  teamId    String?  @db.NVarChar(100)
+  createdAt DateTime @default(now())
+  event     Event    @relation(fields: [eventId], references: [id], onUpdate: NoAction)
+  team      Team?    @relation(fields: [teamId], references: [id], onUpdate: NoAction)
+  user      User     @relation(fields: [userId], references: [id], onUpdate: NoAction)
+
+  @@unique([userId, eventId])
+}
+
+model Team {
+  id            String         @id @default(cuid()) @db.NVarChar(100)
+  name          String         @db.NVarChar(255)
+  eventId       String         @db.NVarChar(100)
+  createdAt     DateTime       @default(now())
+  registrations Registration[]
+  event         Event          @relation(fields: [eventId], references: [id], onUpdate: NoAction)
+  members       TeamMember[]
+}
+
+model TeamMember {
+  id        String   @id @default(cuid()) @db.NVarChar(100)
+  teamId    String   @db.NVarChar(100)
+  userId    String   @db.NVarChar(100)
+  role      String?  @db.NVarChar(100)
+  createdAt DateTime @default(now())
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user      User     @relation(fields: [userId], references: [id], onUpdate: NoAction)
+
+  @@unique([teamId, userId])
+}

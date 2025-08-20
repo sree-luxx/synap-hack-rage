@@ -1,0 +1,19 @@
+{
+  "name": "similarity-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Self-hosted code similarity service using jscpd",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "jscpd": "^3.5.10"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
+
+
