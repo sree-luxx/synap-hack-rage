@@ -7,7 +7,7 @@ The platform provides smooth workflows for **organizers, participants, and judge
 
 ---
 
-##Live link 
+## Live link 
 
 https://sthackhub2092596737.z29.web.core.windows.net/auth
 
