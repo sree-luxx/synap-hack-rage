@@ -1,10 +1,15 @@
 # SynapHack 3.0 – Event & Hackathon Hosting Platform  
 
+
 ## 📌 Overview  
 SynapHack 3.0 is a modern, scalable **event and hackathon hosting platform** designed for student-led and community-driven initiatives.  
 The platform provides smooth workflows for **organizers, participants, and judges**, with real-time engagement, automated certificates, leaderboards, and analytics.  
 
 ---
+
+##Live link 
+
+https://sthackhub2092596737.z29.web.core.windows.net/auth
 
 ## 🚀 Tech Stack  
 
