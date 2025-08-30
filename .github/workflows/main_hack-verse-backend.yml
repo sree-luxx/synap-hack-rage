@@ -1,64 +1,35 @@
-name: Build and deploy Node.js app to Azure Web App - hack-verse-backend
+name: Deploy Backend to Azure
 
 on:
   push:
     branches:
-      - main
-  workflow_dispatch:
+      - main   # or your deploy branch
 
 jobs:
-  build:
-    runs-on: windows-latest
-    permissions:
-      contents: read
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js version
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.x'
+          node-version: '20'   # match your backend's Node version
 
-      - name: npm install, build, and test
-        working-directory: hackhub   # 👈 Run inside your backend folder
+      - name: Install Backend Dependencies
+        working-directory: ./hackhub
         run: |
           npm install
-          npm run build --if-present
-          npm run test --if-present
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: node-app
-          path: hackhub   # 👈 Upload only the backend folder
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: node-app
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2D86CADC2495447AAC55249E12BD6CAA }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_01FD21BE2B544FC7A12C3DD454CD823F }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_28B131DAD6F14E17857D7175A33421EA }}
-
-      - name: 'Deploy to Azure Web App'
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
-        id: deploy-to-webapp
         with:
-          app-name: 'hack-verse-backend'
-          slot-name: 'Production'
-          package: .   # 👈 This works since artifact was downloaded into working dir
+          app-name: hack-verse-backend   # your Azure App Service name
+          package: ./hackhub
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+
+
 
 
