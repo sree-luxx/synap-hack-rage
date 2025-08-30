@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     permissions:
       contents: read
 
@@ -21,17 +21,21 @@ jobs:
           node-version: '20.x'
 
       - name: npm install, build, and test
-        working-directory: hackhub   # 👈 Run inside your backend folder
+        working-directory: hackhub
         run: |
           npm install
           npm run build --if-present
           npm run test --if-present
 
+      - name: Zip artifact for deployment
+        working-directory: hackhub
+        run: zip -r release.zip dist package.json package-lock.json
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: hackhub   # 👈 Upload only the backend folder
+          path: hackhub/release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -45,7 +49,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: node-app
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -59,6 +63,8 @@ jobs:
         with:
           app-name: 'hack-verse-backend'
           slot-name: 'Production'
-          package: .   # 👈 This works since artifact was downloaded into working dir
+          package: release.zip
+          deployment-method: 'zip'
 
-          
+      - name: Restart Azure Web App
+        run: az webapp restart --name hack-verse-backend --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }}
