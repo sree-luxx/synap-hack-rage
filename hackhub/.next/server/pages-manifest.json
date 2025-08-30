@@ -1,13 +1,5 @@
 {
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
-  "/_document": "pages/_document.js",
-  "/api/scores": "pages/api/scores.js",
-  "/api/events/[id]": "pages/api/events/[id].js",
-  "/api/certificates": "pages/api/certificates.js",
-  "/api/nft": "pages/api/nft.js",
-  "/api/events": "pages/api/events.js",
-  "/api/chats": "pages/api/chats.js",
-  "/api/announcements": "pages/api/announcements.js",
-  "/api/sponsors": "pages/api/sponsors.js"
+  "/_document": "pages/_document.js"
 }
