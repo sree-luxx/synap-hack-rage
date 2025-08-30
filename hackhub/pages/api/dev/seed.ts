@@ -78,9 +78,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       await connectMongo();
 
       const subA = await (Submission as any).findOneAndUpdate(
-        { teamId: teamA.id, eventId: event.id },
+        { teamId: teamAId, eventId: event.id },
         {
-          teamId: teamA.id,
+          teamId: teamAId,
           eventId: event.id,
           title: "Smart Vision",
           description: "Computer vision pipeline",
@@ -90,9 +90,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
 
       const subB = await (Submission as any).findOneAndUpdate(
-        { teamId: teamB.id, eventId: event.id },
+        { teamId: teamBId, eventId: event.id },
         {
-          teamId: teamB.id,
+          teamId: teamBId,
           eventId: event.id,
           title: "Chat Assist",
           description: "NLP assistant",
