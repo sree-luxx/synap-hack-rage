@@ -1,20 +1,5 @@
-# Ignore git
-.git*
-.gitignore
-
-# Ignore node modules
 node_modules
 npm-debug.log
-yarn-error.log
-
-# Ignore local build stuff
-dist
-build
-coverage
-logs
-tmp
+project
 *.log
-
-# Ignore system files
-.DS_Store
-Thumbs.db
+*.md
