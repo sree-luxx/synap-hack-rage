@@ -77,13 +77,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       await connectMongo();
 
-      const teamAId = prismaOk ? "demo-team-a" : "demo-team-a";
-      const teamBId = prismaOk ? "demo-team-b" : "demo-team-b";
-
       const subA = await (Submission as any).findOneAndUpdate(
-        { teamId: teamAId, eventId: event.id },
+        { teamId: teamA.id, eventId: event.id },
         {
-          teamId: teamAId,
+          teamId: teamA.id,
           eventId: event.id,
           title: "Smart Vision",
           description: "Computer vision pipeline",
@@ -93,9 +90,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
 
       const subB = await (Submission as any).findOneAndUpdate(
-        { teamId: teamBId, eventId: event.id },
+        { teamId: teamB.id, eventId: event.id },
         {
-          teamId: teamBId,
+          teamId: teamB.id,
           eventId: event.id,
           title: "Chat Assist",
           description: "NLP assistant",
@@ -105,6 +102,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
 
       // Scores
+      const teamAId = prismaOk ? "demo-team-a" : "demo-team-a";
+      const teamBId = prismaOk ? "demo-team-b" : "demo-team-b";
       await (Score as any).create({ eventId, teamId: teamAId, submissionId: String(subA._id), judgeId: organizerId, criteria: [{ name: "Impact", score: 7, max: 10 }], total: 7 });
       await (Score as any).create({ eventId, teamId: teamAId, submissionId: String(subA._id), judgeId: organizerId + "_2", criteria: [{ name: "Impact", score: 8, max: 10 }], total: 8 });
       await (Score as any).create({ eventId, teamId: teamBId, submissionId: String(subB._id), judgeId: organizerId, criteria: [{ name: "Impact", score: 6, max: 10 }], total: 6 });
@@ -141,3 +140,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return serverError(res, error);
   }
 }
+
