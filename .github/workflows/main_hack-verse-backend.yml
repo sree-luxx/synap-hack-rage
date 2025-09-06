@@ -3,7 +3,7 @@ name: Deploy Backend to Azure
 on:
   push:
     branches:
-      - main   # or your default branch
+      - main
 
 jobs:
   build-and-deploy:
@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd hackhub   # your backend folder
+          cd hackhub
           npm install
 
       - name: Build project
@@ -28,10 +28,15 @@ jobs:
           cd hackhub
           npm run build --if-present
 
+      - name: Archive project
+        run: |
+          cd hackhub
+          zip -r ../hackhub.zip ./*
+        
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: hack-verse-backend   # your backend app name
+          app-name: hack-verse-backend   # must match publish profile
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: ./hackhub
+          package: ./hackhub.zip
 
